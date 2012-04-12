@@ -23,7 +23,10 @@
 # Otherwise you will see errors when loading data or saving figures!
 
 # Load libraries and data
+rm(list=ls(all=T))
 library('ggplot2')    # We'll use ggplot2 for all of our visualizations
+library('scales')
+library('pylr')
 
 # This is a tab-delimited file, so we use 'read.delim' and set the separator as a tab character.
 # We also have to alter two defaults; first, we want the strings to not be converted to
@@ -123,12 +126,12 @@ head(ufo.us)
 # We can do this by creating a histogram of frequencies for UFO sightings over time
 quick.hist <- ggplot(ufo.us, aes(x = DateOccurred)) +
   geom_histogram() + 
-  scale_x_date(major = "50 years")
-ggsave(plot = quick.hist,
-       filename = file.path("images", "quick_hist.pdf"),
-       height = 6,
-       width = 8)
-
+  scale_x_date(breaks = date_breaks("50 years"), labels = date_format("%Y"))
+# ggsave(plot = quick.hist,
+#       filename = file.path("images", "quick_hist.png"),
+#       height = 6,
+#       width = 8)
+print(quick.hist, fig.height=6, fig.width=8)
 # First, we notice that there are many very old entries in the data.  For our purposes, we will only look
 # at incidents that occurred from 1990 to the most recent
 ufo.us <- subset(ufo.us, DateOccurred >= as.Date("1990-01-01"))
@@ -136,12 +139,12 @@ ufo.us <- subset(ufo.us, DateOccurred >= as.Date("1990-01-01"))
 # Let's look at the histogram now
 new.hist <- ggplot(ufo.us, aes(x = DateOccurred)) +
   geom_histogram() +
-  scale_x_date(major = "50 years")
-ggsave(plot = new.hist,
-       filename = file.path("images", "new_hist.pdf"),
-       height = 6,
-       width = 8)
-
+  scale_x_date(breaks = date_breaks("5 years"), labels = date_format("%Y"))
+# ggsave(plot = new.hist,
+#       filename = file.path("images", "new_hist.png"),
+#       height = 6,
+#       width = 8)
+print(new.hist, fig.height=6, fig.width=8)
 # Now that we have the data we want, let's look at some aggregations.  We will use
 # the 'ddply' funtion in the plyr package. But first, we create a column of just
 # the Year-Month of each incident.
@@ -202,12 +205,13 @@ state.plot <- ggplot(all.sightings, aes(x = YearMonth,y = Sightings)) +
   facet_wrap(~State, nrow = 10, ncol = 5) + 
   theme_bw() + 
   scale_color_manual(values = c("darkblue" = "darkblue"), legend = FALSE) +
-  scale_x_date(major = "5 years", format = "%Y") +
+  scale_x_date(breaks = date_breaks("5 years"), labels = date_format("%Y")) +
   xlab("Time") +
   ylab("Number of Sightings") +
   opts(title = "Number of UFO sightings by Month-Year and U.S. State (1990-2010)")
 # Save the plot as a PDF
-ggsave(plot = state.plot,
-       filename = file.path("images", "ufo_sightings.pdf"),
-       width = 14,
-       height = 8.5)
+# ggsave(plot = state.plot,
+#       filename = file.path("images", "ufo_sightings.png"),
+#       width = 14,
+#       height = 8.5)
+print(state.plot, fig.height=8.5, fig.width=14)

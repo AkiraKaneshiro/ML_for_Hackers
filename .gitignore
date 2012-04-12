@@ -2,3 +2,7 @@
 .dropbox
 code_check*
 nohup.out
+.Rproj.user
+*.Rproj
+figures
+*-out.html
