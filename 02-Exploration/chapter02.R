@@ -12,9 +12,9 @@
 
 # All images and materials produced by this code are licensed under the Creative Commons 
 # Attribution-Share Alike 3.0 United States License: http://creativecommons.org/licenses/by-sa/3.0/us/
-
+rm(list=ls(all=T))
 # All rights reserved.
-
+#
 #
 # Snippet 1
 #
@@ -22,7 +22,7 @@
 # Load in the data set from disk.
 data.file <- file.path('data', '01_heights_weights_genders.csv')
 heights.weights <- read.csv(data.file, header = TRUE, sep = ',')
-
+head(heights.weights)
 # Create a numeric vector containing just the heights data.
 heights <- with(heights.weights, Height)
 summary(heights)
@@ -245,55 +245,60 @@ data.file <- file.path('data', '01_heights_weights_genders.csv')
 heights.weights <- read.csv(data.file, header = TRUE, sep = ',')
 
 # Experiment with histograms.
-ggplot(heights.weights, aes(x = Height)) +
+out1 <- ggplot(heights.weights, aes(x = Height)) +
   geom_histogram(binwidth = 1)
-
+print(out1)
 #
 # Snippet 21
 #
 
-ggplot(heights.weights, aes(x = Height)) +
+out2 <- ggplot(heights.weights, aes(x = Height)) +
   geom_histogram(binwidth = 5)
-
+print(out2)
 #
 # Snippet 22
 #
 
-ggplot(heights.weights, aes(x = Height)) +
-  geom_histogram(binwidth = 0.001)
-
+out3 <- ggplot(heights.weights, aes(x = Height)) +
+  geom_histogram(binwidth = 0.01)
+print(out3)
 #
 # Snippet 23
 #
 
 # Experiment with kernel density estimates.
-ggplot(heights.weights, aes(x = Height)) +
+outgd <- ggplot(heights.weights, aes(x = Height)) +
   geom_density()
-
+print(outgd)
 #
 # Snippet 24
 #
 
 # Separate out heights and weights based on gender.
-ggplot(heights.weights, aes(x = Height, fill = Gender)) +
+outgdmf <- ggplot(heights.weights, aes(x = Height, fill = Gender)) +
   geom_density()
-
+print(outgdmf)
 #
 # Snippet 25
 #
 
-ggplot(heights.weights, aes(x = Weight, fill = Gender)) +
+outgdwmf <- ggplot(heights.weights, aes(x = Weight, fill = Gender)) +
   geom_density()
+print(outgdwmf)
 
+# Again, we see the same mixture of bell curves in the structure. 
+# In future chapters, we’ll cover this sort of mixture of bell curves in some detail, 
+# but it’s worth giving a name to the structure we’re looking at right now: it’s a 
+# mixture model in which two standard distributions have been mixed to produce a nonstandard distribution.
 #
 # Snippet 26
 #
 
 # Produce two facets in a single plot to make it easier to see the hidden structure.
-ggplot(heights.weights, aes(x = Weight, fill = Gender)) +
+outfgwmf <- ggplot(heights.weights, aes(x = Weight, fill = Gender)) +
   geom_density() +
   facet_grid(Gender ~ .)
-
+print(outfgwmf)
 #
 # Snippet 27
 #
@@ -301,8 +306,15 @@ ggplot(heights.weights, aes(x = Weight, fill = Gender)) +
 # Experiment with random numbers from the normal distribution.
 m <- 0
 s <- 1
-ggplot(data.frame(X = rnorm(100000, m, s)), aes(x = X)) +
-  geom_density()
+normplot <- function(mn, std){
+  return(ggplot(data.frame(X = rnorm(100000, mn, std)), aes(x = X)) +
+  geom_density())
+}
+print(normplot(m,s))
+print(normplot(m,5))
+print(normplot(m,0.5))
+print(normplot(m,0.01))
+#TODO: these would be better if we kept the x-axis scale in ggplot. How?
 
 #
 # Snippet 28
@@ -319,67 +331,74 @@ range(cauchy.values)
 # Snippet 29
 #
 
-ggplot(data.frame(X = normal.values), aes(x = X)) +
+nplot <- ggplot(data.frame(X = normal.values), aes(x = X)) +
   geom_density()
-ggplot(data.frame(X = cauchy.values), aes(x = X)) +
+cplot <- ggplot(data.frame(X = cauchy.values), aes(x = X)) +
   geom_density()
-
+print(nplot)
+print(cplot)
+#TODO: again one ought to plot on same plot
 #
 # Snippet 30
 #
 
 # Experiment with random numbers from the gamma distribution.
 gamma.values <- rgamma(100000, 1, 0.001)
-ggplot(data.frame(X = gamma.values), aes(x = X)) +
+gammaplot <- ggplot(data.frame(X = gamma.values), aes(x = X)) +
   geom_density()
+print(gammaplot)
 
+#Apparently shows up in game data (Cannabalt)
 #
 # Snippet 31
 #
 
 # Generate scatterplots of the heights and weights to see their relationship.
-ggplot(heights.weights, aes(x = Height, y = Weight)) +
+scplothw <- ggplot(heights.weights, aes(x = Height, y = Weight)) +
   geom_point()
-
+print(scplothw)
 #
 # Snippet 32
 #
 
 # Add a smooth shape that relates the two explicitly.
-ggplot(heights.weights, aes(x = Height, y = Weight)) +
+smoothscplot <- ggplot(heights.weights, aes(x = Height, y = Weight)) +
   geom_point() +
   geom_smooth()
-
+print(smoothscplot)
 #
 # Snippet 33
 #
 
 # See how the smooth shape gets better with more data.
-ggplot(heights.weights[1:20, ], aes(x = Height, y = Weight)) +
+try1 <- ggplot(heights.weights[1:20, ], aes(x = Height, y = Weight)) +
   geom_point() +
   geom_smooth()
-ggplot(heights.weights[1:200, ], aes(x = Height, y = Weight)) +
+try2 <- ggplot(heights.weights[1:200, ], aes(x = Height, y = Weight)) +
   geom_point() +
   geom_smooth()
-ggplot(heights.weights[1:2000, ], aes(x = Height, y = Weight)) +
+try3 <- ggplot(heights.weights[1:2000, ], aes(x = Height, y = Weight)) +
   geom_point() +
   geom_smooth()
-
+print(try1)
+print(try2)
+print(try3)
+#Above is regression. Below is classification
 #
 # Snippet 34
 #
 
 # Visualize how gender depends on height and weight.
-ggplot(heights.weights, aes(x = Height, y = Weight)) +
+classplot1 <- ggplot(heights.weights, aes(x = Height, y = Weight)) +
   geom_point(aes(color = Gender, alpha = 0.25)) +
   scale_alpha(legend = FALSE) + 
   scale_color_manual(values = c("Male" = "black", "Female" = "gray")) +
   theme_bw()
-
+print(classplot1)
 # An alternative using bright colors.
-ggplot(heights.weights, aes(x = Height, y = Weight, color = Gender)) +
+classplot2 <- ggplot(heights.weights, aes(x = Height, y = Weight, color = Gender)) +
   geom_point()
-
+print(classplot2)
 #
 # Snippet 35
 #
@@ -391,7 +410,7 @@ logit.model <- glm(Male ~ Weight + Height,
                    data = heights.weights,
                    family = binomial(link = 'logit'))
 
-ggplot(heights.weights, aes(x = Height, y = Weight)) +
+hyplplot <- ggplot(heights.weights, aes(x = Height, y = Weight)) +
   geom_point(aes(color = Gender, alpha = 0.25)) +
   scale_alpha(legend = FALSE) + 
   scale_color_manual(values = c("Male" = "black", "Female" = "gray")) +
@@ -400,3 +419,5 @@ ggplot(heights.weights, aes(x = Height, y = Weight)) +
               slope = - coef(logit.model)[3] / coef(logit.model)[2],
               geom = 'abline',
               color = 'black')
+
+print(hyplplot)
